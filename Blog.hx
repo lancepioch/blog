@@ -1,21 +1,22 @@
 import sys.db.Types;
 
-
 class Blog {
+    public static var db = "mysql";
     static function main() {
         // Open a connection
+        var cnx : sys.db.Connection;
 
-        var cnx = sys.db.Mysql.connect({ 
-            host : "localhost",
-            port : 3306,
-            user : "root",
-            pass : "",
-            socket : null,
-            database : "haxe"
-        });
-
-        // Sqlite not working with C++
-        // var cnx = sys.db.Sqlite.open("haxeblog.db");
+        if (Blog.db == "mysql")
+            cnx = sys.db.Mysql.connect({ 
+                host : "localhost",
+                port : 3306,
+                user : "root",
+                pass : "",
+                socket : null,
+                database : "haxe"
+            });
+        else if (Blog.db == "sqlite")
+            cnx = sys.db.Sqlite.open("haxe.db");
 
         // Set as the connection for our SPOD manager
         sys.db.Manager.cnx = cnx;
