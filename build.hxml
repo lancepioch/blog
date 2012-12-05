@@ -1,0 +1,9 @@
+-main Blog
+-php php
+-D spod_macro
+
+# --next
+# DB Not Supported Error: http://haxe.org/forum/thread/4399
+# -main Blog
+# -cpp cpp
+# -D spod_macro
