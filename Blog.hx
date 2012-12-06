@@ -24,7 +24,7 @@ class Blog {
         // Set as the connection for our SPOD manager
         sys.db.Manager.cnx = cnx;
 
-        setupDatabase(cnx);        
+        Blog.setupDatabase(cnx);        
 
         var users = new Array<User>();
 
@@ -50,7 +50,7 @@ class Blog {
         cnx.close();
     }
 
-    public static setupDatabase(cnx : sys.db.Connection) : Bool {
+    public static function setupDatabase(cnx : sys.db.Connection) {
         sys.db.Manager.cnx = cnx;
         
         if (!sys.db.TableCreate.exists(User.manager))
