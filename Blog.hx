@@ -76,6 +76,7 @@ class Post extends sys.db.Object {
     public function new() {
         created = Date.now();
         changed = created;
+        super();
     }
 
     override function update() : Void {
