@@ -17,6 +17,8 @@ class Blog {
             });
         else if (Blog.db == "sqlite")
             cnx = sys.db.Sqlite.open("haxe.db");
+        else
+            throw "Error: Must select valid database type.";
 
         // Set as the connection for our SPOD manager
         sys.db.Manager.cnx = cnx;
@@ -55,5 +57,24 @@ class User extends sys.db.Object {
     public var name : SString<32>;
     public var birthday : SDate;
     public var phoneNumber : SNull<SText>;
-    // public var admin = false;
+    public var admin : SBool = false;
+}
+
+class Section extends sys.db.Object {
+    public var id : SId;
+    public var title : SString<50>;
+    public var weight : SInt;
+}
+
+class Post extends sys.db.Object {
+    public var id : SId;
+    public var title : SString<100>;
+    public var body : SText;
+    public var created : SDateTime = Date.now();
+    public var changed : SDateTime = Date.now();
+
+    override function update() : Void {
+        changed = Date.now();
+        return super.update();
+    }
 }
