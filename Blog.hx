@@ -2,7 +2,8 @@ import sys.db.Types;
 
 class Blog {
     public static var db = "mysql";
-    static function main() {
+
+    public static function main() {
         // Open a connection
         var cnx : sys.db.Connection;
 
@@ -23,9 +24,7 @@ class Blog {
         // Set as the connection for our SPOD manager
         sys.db.Manager.cnx = cnx;
 
-        // Create the "user" table
-        if (!sys.db.TableCreate.exists(User.manager))
-            sys.db.TableCreate.create(User.manager);
+        setupDatabase(cnx);        
 
         var users = new Array<User>();
 
@@ -49,6 +48,22 @@ class Blog {
         
         // Close the connection
         cnx.close();
+    }
+
+    public static setupDatabase(cnx : sys.db.Connection) : Bool {
+        sys.db.Manager.cnx = cnx;
+        
+        if (!sys.db.TableCreate.exists(User.manager))
+            sys.db.TableCreate.create(User.manager);
+        
+        if (!sys.db.TableCreate.exists(Section.manager))
+            sys.db.TableCreate.create(Section.manager);
+        
+        if (!sys.db.TableCreate.exists(Post.manager))
+            sys.db.TableCreate.create(Post.manager);
+        
+        if (!sys.db.TableCreate.exists(Comment.manager))
+            sys.db.TableCreate.create(Comment.manager);
     }
 }
 
@@ -82,5 +97,18 @@ class Post extends sys.db.Object {
     override function update() : Void {
         changed = Date.now();
         return super.update();
+    }
+}
+
+class Comment extends sys.db.Object {
+    public var id : SId;
+    public var body : SString<500>;
+    public var created : SDateTime;
+    public var changed : SDateTime;
+
+    public function new() {
+        created = Date.now();
+        changed = created;
+        super();
     }
 }
