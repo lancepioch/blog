@@ -70,8 +70,13 @@ class Post extends sys.db.Object {
     public var id : SId;
     public var title : SString<100>;
     public var body : SText;
-    public var created : SDateTime = Date.now();
-    public var changed : SDateTime = Date.now();
+    public var created : SDateTime;
+    public var changed : SDateTime;
+
+    public function new() {
+        created = Date.now();
+        changed = created;
+    }
 
     override function update() : Void {
         changed = Date.now();
