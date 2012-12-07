@@ -24,27 +24,9 @@ class Blog {
         // Set as the connection for our SPOD manager
         sys.db.Manager.cnx = cnx;
 
-        Blog.setupDatabase(cnx);        
+        Blog.setupDatabase(cnx);
 
-        var users = new Array<User>();
 
-        // Set up our test users
-        users.push(new User());
-        users.push(new User());
-
-        users[0].name = "Lance Pioch";
-        //             = new Date(year,mo,dy,h,m,s);
-        users[0].birthday = new Date(1993,02,03,0,0,0);
-        users[0].phoneNumber = "(419) 556 1337";
-        // users[0].admin = true;
-
-        users[1].name = "Derp A. Herp";
-        users[1].birthday = new Date(1990,02,21,0,0,0);
-        users[1].phoneNumber = null;
-
-        // Insert these two users into our database
-        users[0].insert();
-        users[1].insert();
         
         // Close the connection
         cnx.close();
@@ -65,13 +47,35 @@ class Blog {
         if (!sys.db.TableCreate.exists(Comment.manager))
             sys.db.TableCreate.create(Comment.manager);
     }
+
+    public static function test() {
+        var users = new Array<User>();
+
+        // Set up our test users
+        users.push(new User());
+        users.push(new User());
+
+        users[0].name = "Lance Pioch";
+        //                = new Date(year,mo,dy,h,m,s);
+        users[0].birthday = new Date(1993,02,03,0,0,0);
+        users[0].phoneNumber = "(419) 556 1337";
+        // users[0].admin = true;
+
+        users[1].name = "Derp A. Herp";
+        users[1].birthday = new Date(1990,02,21,0,0,0);
+        users[1].phoneNumber = null;
+
+        // Insert these two users into our database
+        users[0].insert();
+        users[1].insert();
+    }
 }
 
 class User extends sys.db.Object {
     public var id : SId;
     public var name : SString<32>;
     public var birthday : SDate;
-    public var phoneNumber : SNull<SText>;
+    // public var phoneNumber : SNull<SText>;
     public var admin : SBool = false;
 }
 
@@ -83,6 +87,8 @@ class Section extends sys.db.Object {
 
 class Post extends sys.db.Object {
     public var id : SId;
+    public var sectionId : SInt;
+    public var userId : SInt;
     public var title : SString<100>;
     public var body : SText;
     public var created : SDateTime;
@@ -102,6 +108,9 @@ class Post extends sys.db.Object {
 
 class Comment extends sys.db.Object {
     public var id : SId;
+    public var postId : SInt;
+    public var parentId : SInt;
+    public var userId : SInt;
     public var body : SString<500>;
     public var created : SDateTime;
     public var changed : SDateTime;
@@ -110,5 +119,10 @@ class Comment extends sys.db.Object {
         created = Date.now();
         changed = created;
         super();
+    }
+
+    override function update() : Void {
+        changed = Date.now();
+        return super.update();
     }
 }
