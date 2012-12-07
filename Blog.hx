@@ -6,7 +6,7 @@ class Blog {
 
     public static function main() {
         Blog.connectDatabase();
-        Blog.setupDatabase(cnx);
+        Blog.setupDatabase();
         Blog.disconnectDatabase();
     }
 
@@ -29,8 +29,6 @@ class Blog {
             cnx = sys.db.Sqlite.open(dbname + ".db");
         else
             throw "Error: Must select valid database type.";
-
-        sys.db.Manager.cnx = Blog.cnx;
     }
 
     public static function disconnectDatabase() {
@@ -40,7 +38,7 @@ class Blog {
     }
 
     public static function setupDatabase(cnx : sys.db.Connection) {
-        sys.db.Manager.cnx = cnx;
+        sys.db.Manager.cnx = Blog.cnx;
         
         if (!sys.db.TableCreate.exists(User.manager))
             sys.db.TableCreate.create(User.manager);
