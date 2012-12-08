@@ -92,16 +92,30 @@ class Blog {
     public static function testDatabase() {
         var users = new Array<User>();
 
-        users.push(new User());
-        users.push(new User());
+        for (i in 0...3) // push number of test users below
+            users.push(new User());
 
         users[0] = Blog.createUser("Lance Pioch", "lance@lancepioch.com", true);
         users[1] = Blog.createUser("Derp A. Herp", "derpaherp@example.com");
+        users[2] = Blog.createUser("The Man", "theman@example.com");
+        users[3] = Blog.createUser("Snoo Reddit", "reddit@example.com");
 
         var section = Blog.createSection("Main");
         var post = users[0].createPost("Initial Post", "This is the most awesome post ever!", section);
         var comment = users[1].createComment("You are absolutely right, I can't believe how cool this is.", post);
         var reply = users[0].createComment("Why thank you good sir!", post, comment);
+
+        reply = users[1].createComment("No problem, have a nice day.", post, reply);
+        reply = users[0].createComment("Thanks, you too.", post, reply);
+        comment = users[3].createComment("This is interesting...", post);
+        users[0].createComment("You really think so!?", post, comment);
+        reply = users[2].createComment("I'm the man and I'm here to put you down!", post, comment);
+        comment = users[0].createComment("Hey, no spamming in my blog, when I get back you are going to be banned.", post, reply);
+        reply.body += "\n User has been banned for this post";
+        reply.update();
+        users[0].createComment("Done and done", post, comment);
+
+        trace(post);
     }
 
     public static function toString() : String {
@@ -178,9 +192,22 @@ class Post extends sys.db.Object {
         changed = Date.now();
         return super.update();
     }
+    
+    public function getUser() : User {
+        return User.manager.select($id == userId);
+    }
 
     public function getComments() : List<Comment> {
         return Comment.manager.search($postId == id);
+    }
+
+    public override function toString() : String {
+        var output = title + " [" + id + "] " + getUser().name + ": " + body;
+
+        for (comment in getComments())
+            output += "\n" + comment;
+
+        return output;
     }
 }
 
@@ -216,13 +243,11 @@ class Comment extends sys.db.Object {
         return toStringHelper();
     }
 
-    public function toStringHelper(depth : Int = 0) : String {
+    private function toStringHelper(depth : Int = 0) : String {
         var output = "\n";
         var prepend = new StringBuf();
 
-        prepend.add("Line 1\n");
-
-        for (i in 0...depth)
+        for (i in 0...depth+1)
             prepend.addChar(45); // Char: '-'
 
         output += prepend + " [" + id + "] " + getUser().name + ": " + body;
