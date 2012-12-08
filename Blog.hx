@@ -60,21 +60,21 @@ class Blog {
             sys.db.TableCreate.create(Comment.manager);
     }
 
-    public static function createSection(title : String, weight : Int = 0) : Int {
+    public static function createSection(title : String, weight : Int = 0) : Section {
         var section = new Section();
         section.title = title;
         section.weight = weight;
         section.insert();
-        return section.id;
+        return section;
     }
     
-    public static function createUser(name : String, email : String, admin : Bool = false) : Int {
+    public static function createUser(name : String, email : String, admin : Bool = false) : User {
         var user = new User();
         user.name = name;
         user.email = email;
         user.admin = admin;
         user.insert();
-        return user.id;
+        return user;
     }
 
     public static function testDatabase() {
@@ -112,24 +112,24 @@ class User extends sys.db.Object {
         return name + (admin ? " [A]" : "");
     }
 
-    public function createPost(title : String, body : String, sectionId : Int) : Int {
+    public function createPost(title : String, body : String, sectionId : Int) : Post {
         var post = new Post();
         post.title = title;
         post.body = body;
         post.sectionId = sectionId;
         post.userId = id;
         post.insert();
-        return post.id;
+        return post;
     }
 
-    public function createComment(body : String, postId : Int, parentId : Null<Int> = null) : Int {
+    public function createComment(body : String, postId : Int, parentId : Null<Int> = null) : Comment {
         var comment = new Comment();
         comment.body = body;
         comment.parentId = parentId;
         comment.postId = postId;
         comment.userId = id;
         comment.insert();
-        return comment.id;
+        return comment;
     }
 }
 
