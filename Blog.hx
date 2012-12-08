@@ -84,20 +84,12 @@ class Blog {
 
         users.push(new User());
         users.push(new User());
-        sections.push(new Section());
-        posts.push(new Post());
 
-        users[0].name = "Lance Pioch";
-        users[0].email = "lance@lancepioch.com";
-        users[0].admin = true;
-        users[0].insert();
+        users[0] = Blog.createUser("Lance Pioch", "lance@lancepioch.com", true);
+        users[1] = Blog.createUser("Derp A. Herp", "derpaherp@example.com");
 
-        users[1].name = "Derp A. Herp";
-        users[1].email = "derpaherp@example.com";
-        users[1].insert();
-
-        var sid = Blog.createSection("Main");
-        user[0].createPost("Initial Post", "This is the most awesome post ever!", sid);
+        var section = Blog.createSection("Main");
+        users[0].createPost("Initial Post", "This is the most awesome post ever!", section);
     }
 }
 
@@ -112,21 +104,21 @@ class User extends sys.db.Object {
         return name + (admin ? " [A]" : "");
     }
 
-    public function createPost(title : String, body : String, sectionId : Int) : Post {
+    public function createPost(title : String, body : String, section : Section) : Post {
         var post = new Post();
         post.title = title;
         post.body = body;
-        post.sectionId = sectionId;
+        post.sectionId = section.id;
         post.userId = id;
         post.insert();
         return post;
     }
 
-    public function createComment(body : String, postId : Int, parentId : Null<Int> = null) : Comment {
+    public function createComment(body : String, post : Post, parent : Null<Comment> = null) : Comment {
         var comment = new Comment();
         comment.body = body;
-        comment.parentId = parentId;
-        comment.postId = postId;
+        comment.parentId = parent.id;
+        comment.postId = post.id;
         comment.userId = id;
         comment.insert();
         return comment;
