@@ -112,10 +112,11 @@ class User extends sys.db.Object {
         return post;
     }
 
-    public function createComment(body : String, post : Post, parent : Null<Comment> = null) : Comment {
+    public function createComment(body : String, post : Post, ?parent : Comment) : Comment {
         var comment = new Comment();
         comment.body = body;
-        comment.parentId = parent.id;
+        if (comment.parent != null)
+            comment.parentId = parent.id;
         comment.postId = post.id;
         comment.userId = id;
         comment.insert();
