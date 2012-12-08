@@ -9,12 +9,12 @@ class Blog {
     public static var pass = "";
     public static var dbname = "haxe";
 
-    private static var test = true;
+    private static var testing = true;
 
     public static function main() {
         Blog.connectDatabase();
         Blog.setupDatabase();
-        if (Blog.test)
+        if (Blog.testing)
             Blog.testDatabase();
         Blog.disconnectDatabase();
     }
