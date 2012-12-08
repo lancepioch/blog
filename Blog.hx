@@ -99,6 +99,17 @@ class Blog {
         var comment = users[1].createComment("You are absolutely right, I can't believe how cool this is.", post);
         var reply = users[0].createComment("Why thank you good sir!", post, comment);
     }
+
+    public static function toString() : String {
+        var output = "Sections: ";
+        var sections = Blog.getSections();
+
+        for (section in sections) {
+            output += section.title + "\n";
+        }
+
+        return output;
+    }
 }
 
 class User extends sys.db.Object {
