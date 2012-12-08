@@ -116,7 +116,7 @@ class User extends sys.db.Object {
     public var id : SId;
     public var name : SString<32>;
     public var email : SString<64>;
-    public var birthday : SNull<SDate>;
+    // public var birthday : SNull<SDate>;
     public var admin : SBool = false;
 
     public override function toString() {
