@@ -60,6 +60,18 @@ class Blog {
             sys.db.TableCreate.create(Comment.manager);
     }
 
+    public static function createSection(title : String, weight : Int) : Int {
+        var section = new Section();
+        section.title = title;
+        section.weight = weight;
+        section.insert();
+        return section.id;
+    }
+
+    public static function createSection(title : String) : Int {
+        return createSection(title, 0);
+    }
+
     public static function testDatabase() {
         var users = new Array<User>();
         var sections = new Array<Section>();
