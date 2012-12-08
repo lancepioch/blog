@@ -1,29 +1,33 @@
 import sys.db.Types;
 
 class Blog {
-    private static var cnx : sys.db.Connection;
+    private static var cnx : Null<sys.db.Connection>;
     public static var db = "mysql";
+
+    public static var host = "localhost";
+    public static var user = "root";
+    public static var pass = "";
+    public static var dbname = "haxe";
+
+    private static var test = true;
 
     public static function main() {
         Blog.connectDatabase();
         Blog.setupDatabase();
+        if (Blog.test)
+            Blog.testDatabase();
         Blog.disconnectDatabase();
     }
 
     public static function connectDatabase() {
-        var host = "localhost";
-        var user = "root";
-        var pass = "";
-        var dbname = "haxe";
-
         if (Blog.db == "mysql")
             cnx = sys.db.Mysql.connect({ 
-                host : host,
+                host : Blog.host,
                 port : 3306,
-                user : user,
-                pass : pass,
+                user : Blog.user,
+                pass : Blog.pass,
                 socket : null,
-                database : dbname
+                database : Blog.dbname
             });
         else if (Blog.db == "sqlite")
             cnx = sys.db.Sqlite.open(dbname + ".db");
@@ -32,12 +36,15 @@ class Blog {
     }
 
     public static function disconnectDatabase() {
-        if (Blog.cnx != Null)
+        if (Blog.cnx != null)
             Blog.cnx.close();
-        Blog.cnx = Null;
+        Blog.cnx = null;
     }
 
-    public static function setupDatabase(cnx : sys.db.Connection) {
+    public static function setupDatabase() {
+        if (Blog.cnx != null)
+            throw "Error: Must call connectDatabase before setupDatabase";
+
         sys.db.Manager.cnx = Blog.cnx;
         
         if (!sys.db.TableCreate.exists(User.manager))
@@ -53,7 +60,7 @@ class Blog {
             sys.db.TableCreate.create(Comment.manager);
     }
 
-    public static function test() {
+    public static function testDatabase() {
         var users = new Array<User>();
 
         // Set up our test users
@@ -103,12 +110,16 @@ class Post extends sys.db.Object {
         changed = Date.now();
         return super.update();
     }
+
+    public function getComments(postId : Int) : List<Comment> {
+        return Comment.manager.search($postId == postId);
+    }
 }
 
 class Comment extends sys.db.Object {
     public var id : SId;
     public var postId : SInt;
-    public var parentId : SInt;
+    public var parentId : SNull<SInt>;
     public var userId : SInt;
     public var body : SString<500>;
     public var created : SDateTime;
