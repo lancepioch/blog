@@ -75,6 +75,10 @@ class Blog {
     public static function getUsers() : List<User> {
         return User.manager.all();
     }
+
+    public static function getUser(userId : Int) : User {
+        return User.manager.select($id == userId);
+    }
     
     public static function createUser(name : String, email : String, admin : Bool = false) : User {
         var user = new User();
@@ -204,4 +208,28 @@ class Comment extends sys.db.Object {
         return Comment.manager.search($parentId == id);
     }
 
+    public function getUser() : User {
+        return User.manager.select($id == userId);
+    }
+
+    public override function toString() : String {
+        return toStringHelper();
+    }
+
+    public function toStringHelper(depth : Int = 0) : String {
+        var output = "\n";
+        var prepend = new StringBuf();
+
+        prepend.add("Line 1\n");
+
+        for (i in 0...depth)
+            prepend.addChar(45); // Char: '-'
+
+        output += prepend + " [" + id + "] " + getUser().name + ": " + body;
+
+        for (comment in getChildren())
+            output += comment.toStringHelper(depth + 1);
+
+        return output;
+    }
 }
