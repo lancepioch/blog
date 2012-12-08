@@ -67,6 +67,14 @@ class Blog {
         section.insert();
         return section;
     }
+
+    public static function getSections() : List<Section> {
+        return Section.manager.all();
+    }
+
+    public static function getUsers() : List<User> {
+        return User.manager.all();
+    }
     
     public static function createUser(name : String, email : String, admin : Bool = false) : User {
         var user = new User();
@@ -87,7 +95,9 @@ class Blog {
         users[1] = Blog.createUser("Derp A. Herp", "derpaherp@example.com");
 
         var section = Blog.createSection("Main");
-        users[0].createPost("Initial Post", "This is the most awesome post ever!", section);
+        var post = users[0].createPost("Initial Post", "This is the most awesome post ever!", section);
+        var comment = users[1].createComment("You are absolutely right, I can't believe how cool this is.", post);
+        var reply = users[0].createComment("Why thank you good sir!", post, comment);
     }
 }
 
