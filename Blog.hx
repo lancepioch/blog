@@ -100,6 +100,26 @@ class User extends sys.db.Object {
     public override function toString() {
         return name + (admin ? " [A]" : "");
     }
+
+    public function createPost(title : String, body : String, sectionId : Int) : Int {
+        var post = new Post();
+        post.title = title;
+        post.body = body;
+        post.sectionId = sectionId;
+        post.userId = id;
+        post.insert();
+        return post.id;
+    }
+
+    public function createComment(body : String, postId : Int, parentId : Null<Int>) : Int {
+        var comment = new Comment();
+        comment.body = body;
+        comment.parentId = parentId;
+        comment.postId = postId;
+        comment.userId = id;
+        comment.insert();
+        return comment.id;
+    }
 }
 
 class Section extends sys.db.Object {
