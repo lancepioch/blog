@@ -79,8 +79,6 @@ class Blog {
 
     public static function testDatabase() {
         var users = new Array<User>();
-        var sections = new Array<Section>();
-        var posts = new Array<Post>();
 
         users.push(new User());
         users.push(new User());
