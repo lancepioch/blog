@@ -120,6 +120,10 @@ class User extends sys.db.Object {
         comment.insert();
         return comment.id;
     }
+
+    public function createComment(body : String, postId : Int) : Int {
+        return createComment(body, postId, null);
+    }
 }
 
 class Section extends sys.db.Object {
