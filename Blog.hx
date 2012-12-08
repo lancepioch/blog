@@ -199,4 +199,9 @@ class Comment extends sys.db.Object {
         changed = Date.now();
         return super.update();
     }
+
+    public function getChildren() : List<Comment> {
+        return Comment.manager.search($parentId == id);
+    }
+
 }
