@@ -91,14 +91,8 @@ class Blog {
         users[1].email = "derpaherp@example.com";
         users[1].insert();
 
-        sections[0].title = "Main";
-        sections[0].insert();
-
-        posts[0].title = "Initial Post";
-        posts[0].body = "This is the most awesome post ever!";
-        posts[0].sectionId = sections[0].id;
-        posts[0].userId = users[0].id;
-        posts[0].insert();
+        var sid = Blog.createSection("Main");
+        user[0].createPost("Initial Post", "This is the most awesome post ever!", sid);
     }
 }
 
