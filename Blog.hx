@@ -67,6 +67,15 @@ class Blog {
         section.insert();
         return section.id;
     }
+    
+    public static function createUser(name : String, email : String, admin : Bool = false) : Int {
+        var user = new User();
+        user.name = name;
+        user.email = email;
+        user.admin = admin;
+        user.insert();
+        return user.id;
+    }
 
     public static function testDatabase() {
         var users = new Array<User>();
