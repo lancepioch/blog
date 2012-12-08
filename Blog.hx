@@ -42,7 +42,7 @@ class Blog {
     }
 
     public static function setupDatabase() {
-        if (Blog.cnx != null)
+        if (Blog.cnx == null)
             throw "Error: Must call connectDatabase before setupDatabase";
 
         sys.db.Manager.cnx = Blog.cnx;
@@ -62,33 +62,54 @@ class Blog {
 
     public static function testDatabase() {
         var users = new Array<User>();
+        var sections = new Array<Section>();
+        var posts = new Array<Post>();
 
-        // Set up our test users
         users.push(new User());
         users.push(new User());
+        sections.push(new Section());
+        posts.push(new Post());
 
         users[0].name = "Lance Pioch";
+        users[0].email = "lance@lancepioch.com";
         users[0].admin = true;
+        users[0].insert();
 
         users[1].name = "Derp A. Herp";
-
-        // Insert these two users into our database
-        users[0].insert();
+        users[1].email = "derpaherp@example.com";
         users[1].insert();
+
+        sections[0].title = "Main";
+        sections[0].insert();
+
+        posts[0].title = "Initial Post";
+        posts[0].body = "This is the most awesome post ever!";
+        posts[0].sectionId = sections[0].id;
+        posts[0].userId = users[0].id;
+        posts[0].insert();
     }
 }
 
 class User extends sys.db.Object {
     public var id : SId;
     public var name : SString<32>;
-    public var birthday : SDate;
+    public var email : SString<64>;
+    public var birthday : SNull<SDate>;
     public var admin : SBool = false;
+
+    public override function toString() {
+        return name + (admin ? " [A]" : "");
+    }
 }
 
 class Section extends sys.db.Object {
     public var id : SId;
     public var title : SString<50>;
-    public var weight : SInt;
+    public var weight : SInt = 0;
+
+    public function getPosts() : List<Post> {
+        return Post.manager.search($sectionId == id);
+    }
 }
 
 class Post extends sys.db.Object {
@@ -106,13 +127,13 @@ class Post extends sys.db.Object {
         super();
     }
 
-    override function update() : Void {
+    public override function update() : Void {
         changed = Date.now();
         return super.update();
     }
 
-    public function getComments(postId : Int) : List<Comment> {
-        return Comment.manager.search($postId == postId);
+    public function getComments() : List<Comment> {
+        return Comment.manager.search($postId == id);
     }
 }
 
