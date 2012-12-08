@@ -60,16 +60,12 @@ class Blog {
             sys.db.TableCreate.create(Comment.manager);
     }
 
-    public static function createSection(title : String, weight : Int) : Int {
+    public static function createSection(title : String, weight : Int = 0) : Int {
         var section = new Section();
         section.title = title;
         section.weight = weight;
         section.insert();
         return section.id;
-    }
-
-    public static function createSection(title : String) : Int {
-        return createSection(title, 0);
     }
 
     public static function testDatabase() {
@@ -117,7 +113,7 @@ class User extends sys.db.Object {
         return post.id;
     }
 
-    public function createComment(body : String, postId : Int, parentId : Null<Int>) : Int {
+    public function createComment(body : String, postId : Int, parentId : Null<Int> = null) : Int {
         var comment = new Comment();
         comment.body = body;
         comment.parentId = parentId;
@@ -125,10 +121,6 @@ class User extends sys.db.Object {
         comment.userId = id;
         comment.insert();
         return comment.id;
-    }
-
-    public function createComment(body : String, postId : Int) : Int {
-        return createComment(body, postId, null);
     }
 }
 
