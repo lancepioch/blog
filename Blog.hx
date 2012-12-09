@@ -46,6 +46,7 @@ class Blog {
             throw "Error: Must call connectDatabase before setupDatabase";
 
         sys.db.Manager.cnx = Blog.cnx;
+        sys.db.Manager.initialize();
         
         if (!sys.db.TableCreate.exists(User.manager))
             sys.db.TableCreate.create(User.manager);
@@ -65,7 +66,7 @@ class Blog {
         section.title = title;
         section.weight = weight;
         section.insert();
-        return section;
+        return Section.manager.get(section.id);
     }
 
     public static function getSections() : List<Section> {
@@ -86,7 +87,7 @@ class Blog {
         user.email = email;
         user.admin = admin;
         user.insert();
-        return user;
+        return User.manager.get(user.id);
     }
 
     public static function testDatabase() {
@@ -111,7 +112,7 @@ class Blog {
         users[0].createComment("You really think so!?", post, comment);
         reply = users[2].createComment("I'm the man and I'm here to put you down!", post, comment);
         comment = users[0].createComment("Hey, no spamming in my blog, when I get back you are going to be banned.", post, reply);
-        reply.body += "\n User has been banned for this post";
+        reply.delete();
         users[0].createComment("Done and done", post, comment);
 
         trace(post);
@@ -126,6 +127,10 @@ class Blog {
         }
 
         return output;
+    }
+
+    public static function getDeletedMessage() : String {
+        return "This post has been deleted.";
     }
 }
 
@@ -142,6 +147,10 @@ class User extends sys.db.Object {
         return name;
     }
 
+    public static function get(userId : Int) : User {
+        return User.manager.get(userId);
+    }
+
     public function createPost(title : String, body : String, section : Section) : Post {
         var post = new Post();
         post.title = title;
@@ -149,7 +158,7 @@ class User extends sys.db.Object {
         post.sectionId = section.id;
         post.userId = id;
         post.insert();
-        return post;
+        return Post.manager.get(post.id);
     }
 
     public function createComment(body : String, post : Post, ?parent : Comment) : Comment {
@@ -160,7 +169,7 @@ class User extends sys.db.Object {
         comment.postId = post.id;
         comment.userId = id;
         comment.insert();
-        return comment;
+        return Comment.manager.get(comment.id);
     }
 }
 
@@ -210,7 +219,7 @@ class Post extends sys.db.Object {
         var output = title + " [" + id + "] " + getUser().name + ": " + body;
 
         for (comment in getTopComments())
-            output += "\n" + comment;
+            output += comment;
 
         return output;
     }
@@ -224,6 +233,7 @@ class Comment extends sys.db.Object {
     public var body : SString<500>;
     public var created : SDateTime;
     public var changed : SDateTime;
+    public var deleted : SBool = false;
 
     public function new() {
         created = Date.now();
@@ -231,9 +241,19 @@ class Comment extends sys.db.Object {
         super();
     }
 
-    override function update() : Void {
+    public override function update() : Void {
         changed = Date.now();
-        return super.update();
+        super.update();
+    }
+
+    public override function delete() : Void {
+        deleted = true;
+        update();
+    }
+
+    public function undelete() : Void {
+        deleted = false;
+        update();
     }
 
     public function getChildren() : List<Comment> {
@@ -248,14 +268,16 @@ class Comment extends sys.db.Object {
         return toStringHelper();
     }
 
-    private function toStringHelper(depth : Int = 0) : String {
+    private function toStringHelper(depth : Int = 0, showDeleted : Bool = false) : String {
         var output = "\n";
         var prepend = new StringBuf();
 
         for (i in 0...depth+1)
             prepend.addChar(45); // Char: '-'
 
-        output += prepend + " [" + id + "] " + getUser().name + ": " + body;
+        output += prepend + " "
+                + getUser().name + ": "
+                + ((showDeleted || !deleted) ? body : Blog.getDeletedMessage());
 
         for (comment in getChildren())
             output += comment.toStringHelper(depth + 1);
