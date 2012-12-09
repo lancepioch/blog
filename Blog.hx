@@ -112,7 +112,6 @@ class Blog {
         reply = users[2].createComment("I'm the man and I'm here to put you down!", post, comment);
         comment = users[0].createComment("Hey, no spamming in my blog, when I get back you are going to be banned.", post, reply);
         reply.body += "\n User has been banned for this post";
-        reply.update();
         users[0].createComment("Done and done", post, comment);
 
         trace(post);
@@ -138,7 +137,9 @@ class User extends sys.db.Object {
     public var admin : SBool = false;
 
     public override function toString() {
-        return name + (admin ? " [A]" : "");
+        if (admin)
+            return name + " [A]";
+        return name;
     }
 
     public function createPost(title : String, body : String, section : Section) : Post {
@@ -192,7 +193,7 @@ class Post extends sys.db.Object {
         changed = Date.now();
         return super.update();
     }
-    
+
     public function getUser() : User {
         return User.manager.select($id == userId);
     }
@@ -201,10 +202,14 @@ class Post extends sys.db.Object {
         return Comment.manager.search($postId == id);
     }
 
+    public function getTopComments() : List<Comment> {
+        return Comment.manager.search($postId == id && $parentId == null);
+    }
+
     public override function toString() : String {
         var output = title + " [" + id + "] " + getUser().name + ": " + body;
 
-        for (comment in getComments())
+        for (comment in getTopComments())
             output += "\n" + comment;
 
         return output;
