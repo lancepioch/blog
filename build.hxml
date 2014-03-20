@@ -1,3 +1,7 @@
 -main Blog
--neko Blog.n
+
+#-neko Blog.n
+#-php php
+#-cpp cpp
+
 -D spod_macro
